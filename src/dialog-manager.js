@@ -10,35 +10,67 @@ const policies = [
   'social media',
   'attendance',
   'employee development',
+  // 'regularization process',
+  // 'holiday substitution',
+  // 'leave administration policy',
+  // 'movement policy',
+  // 'drugs',
+  // 'infectious diseases',
 ];
 
-function buildValidationResult(isValid, violatedSlot, messageContent) {
+function buildValidationResult(isValid, violatedSlot, messageContent, options) {
   if (messageContent == null) {
     return {
       isValid,
-      violatedSlot
+      violatedSlot,
+      options
     };
   }
   return {
     isValid,
     violatedSlot,
-    message: { contentType: 'PlainText', content: messageContent }
+    message: { contentType: 'PlainText', content: messageContent },
+    options
+  };
+}
+
+function getButtons(options) {
+  var buttons = [];
+  _.forEach(options, option => {
+    buttons.push({
+      text: option,
+      value: option
+    });
+  });
+  return buttons;
+}
+
+function getOptions(title, types) {
+  return {
+    title,
+    imageUrl: 'https://cdn0.iconfinder.com/data/icons/life-insurance-4/64/1-15-512.png',
+    buttons: getButtons(types)
   };
 }
 
 function validateDepartment(department) {
-  if (department && (departments.indexOf(department.toLowerCase()) === -1)) {
-    return buildValidationResult(false, 'department', `We do not have that department for Human Resource.`);
+  if (!deparyment || (department && (departments.indexOf(department.toLowerCase()) === -1))) {
+    const options = getOptions('Select a department', departments);
+    return buildValidationResult(false, 'department', `We do not have that department for Human Resource.`, options);
   }
 
   return buildValidationResult(true, null, null);
 }
 
 function validatePolicy(policy) {
-  if (policy && (policies.indexOf(policy.toLowerCase()) === -1)) {
-    return buildValidationResult(false, 'policy', `We do not have any information about ${policy} policy.`);
-  }
+  console.log('Validating policy input: ' + policy);
+  if (!policy || (policy && (policies.indexOf(policy.toLowerCase()) === -1))) {
+    console.log('Policy was invalid.');
+    const options = getOptions('Choose a policy', policies);
 
+    return buildValidationResult(false, 'policy', `We do not have any information about ${policy} policy.`, options);
+  }
+  console.log('Policy was valid.');
   return buildValidationResult(true, null, null);
 }
 
@@ -61,7 +93,10 @@ function executeHrKnowledge(intentRequest) {
         intentRequest.currentIntent.name,
         slots,
         validationResult.violatedSlot,
-        validationResult.message
+        validationResult.message,
+        validationResult.options.title,
+        validationResult.options.imageUrl,
+        validationResult.options.buttons
       )
     );
   }
@@ -88,7 +123,10 @@ function executePolicies(intentRequest) {
         intentRequest.currentIntent.name,
         slots,
         validationResult.violatedSlot,
-        validationResult.message
+        validationResult.message,
+        validationResult.options.title,
+        validationResult.options.imageUrl,
+        validationResult.options.buttons
       )
     );
   }
@@ -100,12 +138,12 @@ let dialogManager = function (intentRequest) {
   const intentName = intentRequest.currentIntent.name;
 
   if (intentName === 'HRKnowledge') {
-    console.log(`${intentName} was called`);
+    console.log(`Processing ${intentName} dialog..`);
     return executeHrKnowledge(intentRequest);
   }
 
   if (intentName === 'HRPolicies') {
-    console.log(`${intentName} was called.`);
+    console.log(`Processing ${intentName} dialog..`);
     return executePolicies(intentRequest);
   }
 
