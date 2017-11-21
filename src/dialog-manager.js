@@ -55,7 +55,7 @@ function getButtons(options) {
 function getOptions(title, types) {
   return {
     title,
-    imageUrl: 'https://cdn0.iconfinder.com/data/icons/life-insurance-4/64/1-15-512.png',
+    imageUrl: null,//'https://cdn0.iconfinder.com/data/icons/life-insurance-4/64/1-15-512.png',
     buttons: getButtons(types)
   };
 }
