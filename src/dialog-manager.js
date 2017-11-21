@@ -45,7 +45,7 @@ function getButtons(options) {
   var buttons = [];
   _.forEach(options, option => {
     buttons.push({
-      text: option,
+      text: _.startCase(option),
       value: option
     });
   });
@@ -63,7 +63,7 @@ function getOptions(title, types) {
 function validateDepartment(department) {
   if (!department || (department && (departments.indexOf(department.toLowerCase()) === -1))) {
     const options = getOptions('Select a department', departments);
-    return buildValidationResult(false, 'department', `We do not have that department for Human Resource.`, options);
+    return buildValidationResult(false, 'department', `Check departments..`, options);
   }
 
   return buildValidationResult(true, null, null);
