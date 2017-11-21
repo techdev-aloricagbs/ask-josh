@@ -1,7 +1,7 @@
 "use strict";
 
-const handleDialogCodeHook = require('./dialog-manager');
-const handleFulfillmentCodeHook = require('./fulfillment-manager');
+const handleDialogCodeHook = require('../../dialog-manager');
+const handleFulfillmentCodeHook = require('../../fulfillment-manager');
 
 module.exports = function (intentRequest) {
   const source = intentRequest.invocationSource;
