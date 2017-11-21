@@ -4,19 +4,26 @@ const _ = require('lodash');
 const lexResponses = require('./lexResponses');
 
 const departments = ['payroll', 'services delivery', 'benefits', 'operations', 'recruitment'];
-const policies = [
-  'corporate social responsibility',
-  'pre-employment requirements',
-  'social media',
-  'attendance',
-  'employee development',
-  // 'regularization process',
-  // 'holiday substitution',
-  // 'leave administration policy',
-  // 'movement policy',
-  // 'drugs',
-  // 'infectious diseases',
-];
+
+const policies = {
+  'code of conduct': [
+    'corporate social responsibility',
+    'pre-employment requirements',
+    'social media',
+    'attendance',
+    'employee development',
+  ],
+  'compensation and benefits': [
+    'regularization process',
+    'holiday substitution',
+    'leave administration policy',
+    'movement policy',
+  ],
+  'health and safety': [
+    'drugs',
+    'infectious diseases'
+  ]
+};
 
 function buildValidationResult(isValid, violatedSlot, messageContent, options) {
   if (messageContent == null) {
@@ -54,7 +61,7 @@ function getOptions(title, types) {
 }
 
 function validateDepartment(department) {
-  if (!deparyment || (department && (departments.indexOf(department.toLowerCase()) === -1))) {
+  if (!department || (department && (departments.indexOf(department.toLowerCase()) === -1))) {
     const options = getOptions('Select a department', departments);
     return buildValidationResult(false, 'department', `We do not have that department for Human Resource.`, options);
   }
@@ -62,16 +69,42 @@ function validateDepartment(department) {
   return buildValidationResult(true, null, null);
 }
 
+/**
+ * Validates the HR policy being requested
+ * @param policy
+ * @returns {{isValid, violatedSlot, options}|{isValid, violatedSlot, message, options}}
+ */
 function validatePolicy(policy) {
   console.log('Validating policy input: ' + policy);
-  if (!policy || (policy && (policies.indexOf(policy.toLowerCase()) === -1))) {
-    console.log('Policy was invalid.');
-    const options = getOptions('Choose a policy', policies);
+  let levelOnePolicies = Object.keys(policies);
+  let levelTwoPolicies = [];
+  let options = {};
+  levelOnePolicies.forEach(function(v) {
+    levelTwoPolicies = levelTwoPolicies.concat(policies[v]);
+  });
 
-    return buildValidationResult(false, 'policy', `We do not have any information about ${policy} policy.`, options);
+  if (!policy) {
+    options = getOptions('Choose a policy', levelOnePolicies);
+    return buildValidationResult(false, 'policy', `Checking policies..`, options);
+  } else if (policy && (levelOnePolicies.indexOf(policy.toLowerCase()) === -1)) {
+      console.log('Policy not in level 1. Proceeding to level 2 check');
+      if (levelTwoPolicies.indexOf(policy.toLowerCase()) === -1) {
+        console.log('Policy not in level 2. Asking for level one choices.')
+        console.log('Policy was invalid.');
+        options = getOptions('Choose a policy', levelOnePolicies);
+
+        return buildValidationResult(false, 'policy', `Checking policies...`, options);
+      } else {
+        console.log('Policy in level 2. Checking..')
+        return buildValidationResult(true, null, null);
+      }
+  } else {
+    console.log('Policy in level 1, Asking for level 2.');
+    options = getOptions(`What specific policy under ${policy} do you wish to know?`, policies[policy]);
+
+    return buildValidationResult(false, 'policy', `Checking policies...`, options);
   }
-  console.log('Policy was valid.');
-  return buildValidationResult(true, null, null);
+
 }
 
 /**
