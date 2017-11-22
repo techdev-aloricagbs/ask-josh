@@ -3,6 +3,8 @@
 const hrKnowledge = require('./src/intents/hr-knowledge/hrKnowledge');
 const policies = require('./src/intents/hr-policies/policies');
 const help = require('./src/intents/help');
+const lexResponses = require('./src/lexResponses');
+
 module.exports = function(intentRequest) {
   console.log(`dispatch userId=${intentRequest.userId}, intentName=${intentRequest.currentIntent.name}`);
   const intentName = intentRequest.currentIntent.name;
@@ -21,5 +23,9 @@ module.exports = function(intentRequest) {
     return help(intentRequest);
   }
 
-  throw new Error(`Intent with name ${intentName} not supported`);
+  let message = {
+    contentType: 'PlainText',
+    content: `I cannot process your query - ${intentRequest.inputTranscript} - I am still learning.`,
+  };
+  return Promise.resolve(lexResponses.close(intentRequest.sessionAttributes, 'Fulfilled', message));
 };
