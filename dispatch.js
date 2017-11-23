@@ -1,10 +1,10 @@
 'use strict';
 
-const intentHandler = require('./src/intent-handler');
+const requestHookRouter = require('./src/request-hook-router');
 const lexResponses = require('./src/lexResponses');
 
 const supportedIntents = [
-  "HRKnowledge", "HRPolicies", "HRHelp", "HRTeam"
+  "HRPolicies", "HRHelp", "HRTeam"
 ];
 
 module.exports = function(intentRequest) {
@@ -12,7 +12,7 @@ module.exports = function(intentRequest) {
 
   if (supportedIntents.indexOf(intentName) !== -1) {
     console.log(`${intentName} was called`);
-    return intentHandler(intentRequest);
+    return requestHookRouter(intentRequest);
   }
 
   let message = {
