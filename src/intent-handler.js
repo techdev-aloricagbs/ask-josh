@@ -1,10 +1,10 @@
 "use strict";
 
-const handleDialogCodeHook = require('../../dialog-manager');
-const handleFulfillmentCodeHook = require('../../fulfillment-manager');
+const handleDialogCodeHook = require('./dialog-manager');
+const handleFulfillmentCodeHook = require('./fulfillment-manager');
 
 module.exports = function (intentRequest) {
-  console.log('Processing HR policy intent..');
+  console.log(`Processing ${intentRequest.currentIntent.name}..`);
   const source = intentRequest.invocationSource;
 
   if (source === 'DialogCodeHook') {

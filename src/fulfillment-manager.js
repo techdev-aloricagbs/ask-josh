@@ -45,7 +45,7 @@ module.exports = function(intentRequest) {
     result = fulfillHRPolicies(intentRequest.currentIntent.slots.policy);
   }
 
-if (intentName === 'HRHelp') {
+  if (intentName === 'HRHelp') {
     result = buildFulfilmentResult('Fulfilled', "I am here to help you with anything HR related.");
   }
 
