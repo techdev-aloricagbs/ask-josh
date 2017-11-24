@@ -3,6 +3,30 @@
 const utils = require('../utils');
 const lexResponses = require('../lexResponses');
 const builders = require('../response-builders');
+const Table = require('cli-table2');
+const constants = require('../constants');
+const _ = require('lodash');
+
+const table = new Table({
+  chars: {
+    'top': '-',
+    'top-mid': '-',
+    'top-left': '-',
+    'top-right': '-',
+    'bottom': '-',
+    'bottom-mid': '-',
+    'bottom-left': '-',
+    'bottom-right': '-',
+    'left': '||',
+    'left-mid': '-' ,
+    'mid': '-' ,
+    'mid-mid': '-',
+    'right': '||',
+    'right-mid': '-',
+    'middle': '||'
+  },
+  head: ['Name', 'Title', `Site`, 'Email Address'],
+});
 
 const departments = ['payroll', 'services delivery', 'benefits', 'operations', 'recruitment'];
 
@@ -40,7 +64,12 @@ function handleDialogCodeHook(intentRequest) {
 }
 
 function handleFulfillmentCodeHook(intentRequest) {
-  let result = builders.fulfillmentResult('Fulfilled', 'The teams are under construction');
+  _.forEach(constants.TEAMS.operations, member => {
+    table.push(member);
+  });
+  
+  // console.log(table.toString());
+  let result = builders.fulfillmentResult('Fulfilled', table.toString());
   return Promise.resolve(lexResponses.close(intentRequest.sessionAttributes, result.fulfillmentState, result.message));
 }
 
