@@ -7,27 +7,6 @@ const Table = require('cli-table2');
 const constants = require('../constants');
 const _ = require('lodash');
 
-const table = new Table({
-  chars: {
-    'top': '-',
-    'top-mid': '-',
-    'top-left': '-',
-    'top-right': '-',
-    'bottom': '-',
-    'bottom-mid': '-',
-    'bottom-left': '-',
-    'bottom-right': '-',
-    'left': '||',
-    'left-mid': '-' ,
-    'mid': '-' ,
-    'mid-mid': '-',
-    'right': '||',
-    'right-mid': '-',
-    'middle': '||'
-  },
-  head: ['Name', 'Title', `Site`, 'Email Address'],
-});
-
 const departments = ['payroll', 'services delivery', 'benefits', 'operations', 'recruitment'];
 
 function validateDepartment(department) {
@@ -64,7 +43,35 @@ function handleDialogCodeHook(intentRequest) {
 }
 
 function handleFulfillmentCodeHook(intentRequest) {
-  _.forEach(constants.TEAMS.operations, member => {
+  let slot = intentRequest.currentIntent.slots.department;
+  let label = _.startCase(slot);
+
+  if (['services delivery', 'benefits', 'payroll'].indexOf(slot) !== -1) {
+    label = 'Services Delivery | Benefits | Payroll'
+  }
+
+  let table = new Table({
+    chars: {
+      'top': '-',
+      'top-mid': '-',
+      'top-left': '-',
+      'top-right': '-',
+      'bottom': '-',
+      'bottom-mid': '-',
+      'bottom-left': '-',
+      'bottom-right': '-',
+      'left': '',
+      'left-mid': '-' ,
+      'mid': '-' ,
+      'right': '',
+      'right-mid':
+        ''
+    },
+    style: { 'padding-left': 0, 'padding-right': 0 },
+    head: [`${label} Directory`],
+  });
+
+  _.forEach(constants.TEAMS[slot], member => {
     table.push(member);
   });
   
